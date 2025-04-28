@@ -16,3 +16,25 @@ async def lifespan(app: FastAPI):
     yield
     pool.close()
     pool.join()
+
+app = FastAPI(lifespan=lifespan)
+
+def verify_token(x_auth_token: str = Header(...)):
+    if x_auth_token != AUTH_TOKEN:
+        raise HTTPException(status_code=403, detail= "Invalid auth_token")
+    
+@app.post("/submit", dependencies=[Depends(verify_token)])
+
+def submit_scrape_job(url:str):
+    session = Session()
+    new_job = ScrapeJob(url=url)
+    session.add(new_job)
+    session.commit()
+    
+    # web scraping logic
+    
+    return {"job_id": new_job.id, "status":"submitted"}
+
+@app.get("/status/{job_id}", dependencies=[Depends(verify_token)])
+ 
+    
