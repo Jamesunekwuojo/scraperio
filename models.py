@@ -7,12 +7,31 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 Base = declarative_base()
 
 
-class ScrapeJob():
-    def __init__(self, job_id, url, status):
-        self.job_id = job_id
-        self.url = url
-        self.status = status
+class ScrapeJob(Base):
+    __tablename__ = 'scrape_jobs'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    url = Column(String(255), nullable=False)
+    status = Column(String, default='pending')
+    result = Column(Text)
+    
+db_file = os.path.join(os.getcwd(), 'scrape_jobs.db')
 
-    def __repr__(self):
-        return f"<ScrapeJob(job_id={self.job_id}, url={self.url}, status={self.status})>"
+os.makedirs(os.path.dirname(db_file), exist_ok=True)
+
+engine = create_engine(f'sqlite:///{db_file}')
+
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+
+try:
+    with Session() as session:
+        session.query(ScrapeJob).first()
+    print("Database connection successful.")
+    
+except Exception as e:
+    print("Error connecting to the database:", e)
+    
+    
+  
     
