@@ -14,13 +14,18 @@ def scrape_url(job_id, url):
             response = requests.get(url)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
-                job.result = str(soup)
+                title = soup.title.string if soup.title else "No title found"
+                job.result = f"Title: {title}"
                 job.status = "completed"
                 break
             else:
                 job.status = "failed"
+                job.result = f"Failed to fetch URL, status code: {response.status_code}"
         except Exception as e:
-            job.status = "failed"
+            job.result= f"Error:{str(e)} (attempt {attempt+1}/3)"
+        finally:
+            session.commit()
+            session.close()
 
 
 

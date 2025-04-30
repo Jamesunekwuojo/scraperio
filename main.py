@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Header
+from scrape import scrape_url
 
 from models import ScrapeJob, Session
 
@@ -30,6 +31,8 @@ def submit_scrape_job(url:str):
     new_job = ScrapeJob(url=url)
     session.add(new_job)
     session.commit()
+    
+    pool.apply_async(scrape_url, args=(new_job.id, new_job.url))
     
     # web scraping logic
     
