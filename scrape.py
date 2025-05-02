@@ -38,3 +38,9 @@ def scrape_url(job_id, url):
 # rootuser_password = candee1@unekwuojo
 
 # fastapiuser_pass = candee1@
+
+# I used scp -r  to copy files from my local machine to the server recursively
+# scp -r /path/to/local/dir username@remote_host:/path/to/remote/dir
+# Used nginix  for reverse proxy . i.e make  the api available or accessible on the public port I assignedd to it.
+
+# U can proxy that's  route request from a public address port to a local Ip adress.  
